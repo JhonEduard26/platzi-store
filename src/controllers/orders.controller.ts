@@ -1,9 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 
 @Controller('orders')
 export class OrdersController {
   @Get()
-  getHello(): string {
-    return 'ruta: orders.controller';
+  getAll() {
+    return {
+      message: 'esta acción retorna todas las ventas',
+    };
+  }
+
+  @Post()
+  create(@Body() payload: any) {
+    return {
+      message: 'esta acción crea una venta',
+      payload,
+    };
   }
 }
