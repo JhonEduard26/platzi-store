@@ -9,7 +9,7 @@ export class ProductsService {
       id: 1,
       name: 'Mouse',
       description: 'lorem ipsum dolor',
-      image: 'url de la imagen',
+      image: '',
       price: 50_000,
       stock: 50,
     },
@@ -35,25 +35,24 @@ export class ProductsService {
   }
 
   update(id: number, body: any): void {
-    const productIndex = this.products.findIndex((item) => item.id === id);
+    const product = this.findOne(id);
 
-    if (productIndex) {
+    if (product) {
+      const productIndex = this.products.findIndex((item) => item.id === id);
       this.products[productIndex] = {
         id,
+        ...product,
         ...body,
       };
     }
-
-    return null;
   }
 
   delete(id: number): void {
-    const productIndex = this.products.findIndex((item) => item.id === id);
+    const product = this.findOne(id);
 
-    if (productIndex) {
+    if (product) {
+      const productIndex = this.products.findIndex((item) => item.id === id);
       this.products.splice(productIndex, 1);
-
-      return null;
     }
   }
 }
