@@ -20,7 +20,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('/:id')
+  @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
