@@ -40,11 +40,11 @@ export class ProductsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateProductDTO,
   ) {
-    return this.productsService.update(+id, payload);
+    return this.productsService.update(id, payload);
   }
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.delete(+id);
+    return this.productsService.delete(id);
   }
 }

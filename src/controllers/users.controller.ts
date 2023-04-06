@@ -4,45 +4,42 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
+import { UsersService } from '../services/users.service';
+import { CreateUserDTO, UpdateUserDTO } from '../dtos/users.dtos';
 
 @Controller('users')
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
   @Get()
   getAll() {
-    return {
-      message: 'esta acción retorna todos los usuarios',
-    };
+    return this.usersService.findAll();
   }
 
   @Get('/:id')
-  getOne(@Param('id') id: number) {
-    return {
-      message: `usuario con id ${id}`,
-    };
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
   }
 
   @Post()
-  create(@Body() payload: any) {
-    return {
-      message: 'esta acción crea un usuario',
-      payload,
-    };
+  create(@Body() payload: CreateUserDTO) {
+    return this.usersService.create(payload);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() payload: any) {
-    return {
-      id,
-      message: 'esta accion actualiza un usuario',
-      payload,
-    };
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: UpdateUserDTO,
+  ) {
+    return this.usersService.update(id, payload);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return id;
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.delete(id);
   }
 }

@@ -4,45 +4,42 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
+import { CreateBrandDTO, UpdateBrandDTO } from 'src/dtos/brands.dtos';
+import { BrandsService } from 'src/services/brands.service';
 
 @Controller('brands')
 export class BrandsController {
+  constructor(private readonly brandsService: BrandsService) {}
+
   @Get('/:id')
-  getOne(@Param('id') id: string) {
-    return {
-      message: `brand con id ${id}`,
-    };
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.brandsService.findOne(id);
   }
 
   @Get()
   getAll() {
-    return {
-      message: `todas las marcas`,
-    };
+    return this.brandsService.findAll();
   }
 
   @Post()
-  create(@Body() payload: any) {
-    return {
-      message: `esta acción crea una marca`,
-      payload,
-    };
+  create(@Body() payload: CreateBrandDTO) {
+    return this.brandsService.create(payload);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() payload: any) {
-    return {
-      id,
-      message: 'esta accion actualiza una marca',
-      payload,
-    };
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: UpdateBrandDTO,
+  ) {
+    return this.brandsService.update(id, payload);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return id;
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.brandsService.delete(id);
   }
 }
