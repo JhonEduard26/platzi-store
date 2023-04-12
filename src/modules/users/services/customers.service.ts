@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCustomerDTO, UpdateCustomerDTO } from '../dtos/customers.dtos';
+import { CreateCustomerDTO, UpdateCustomerDTO } from '../dtos/customers.dto';
 import { Customer } from '../entities/customer.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { ProductsService } from 'src/modules/products/services/products.service';

@@ -11,7 +11,7 @@ import {
 import {
   CreateOrderDTO,
   UpdateOrderDTO,
-} from 'src/modules/orders/dtos/orders.dtos';
+} from 'src/modules/orders/dtos/orders.dto';
 import { OrdersService } from 'src/modules/orders/services/orders.service';
 
 @Controller('orders')

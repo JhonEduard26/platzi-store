@@ -3,7 +3,7 @@ import { Order } from 'src/modules/orders/entities/order.entity';
 import {
   CreateOrderDTO,
   UpdateOrderDTO,
-} from 'src/modules/orders/dtos/orders.dtos';
+} from 'src/modules/orders/dtos/orders.dto';
 
 @Injectable()
 export class OrdersService {

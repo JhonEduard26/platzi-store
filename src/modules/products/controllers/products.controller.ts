@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dtos';
+import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dto';
 
 @Controller('products')
 export class ProductsController {
