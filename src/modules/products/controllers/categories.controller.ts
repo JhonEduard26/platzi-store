@@ -40,6 +40,6 @@ export class CategoriesController {
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.categoriesService.delete(id);
+    return this.categoriesService.remove(id);
   }
 }

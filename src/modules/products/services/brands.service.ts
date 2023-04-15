@@ -1,54 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { CreateBrandDTO, UpdateBrandDTO } from '../dtos/brands.dto';
 import { Brand } from '../entities/brand.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BrandsService {
-  private counterId = 1;
-  private brands: Brand[] = [];
+  constructor(
+    @InjectRepository(Brand) private brandsRepository: Repository<Brand>,
+  ) {}
 
-  findAll(): Brand[] {
-    return this.brands;
+  findAll(): Promise<Brand[]> {
+    return this.brandsRepository.find();
   }
 
-  findOne(id: number): Brand {
-    const brand = this.brands.find((item) => item.id === id);
+  async findOne(id: number): Promise<Brand | null> {
+    const brand = this.brandsRepository.findOneBy({ id });
 
     if (!brand) throw new NotFoundException(`Marca ${id} no fue encontrado`);
 
     return brand;
   }
 
-  create(payload: CreateBrandDTO): void {
-    this.counterId++;
-
-    const newBrand = {
-      id: this.counterId,
-      ...payload,
-    };
-
-    this.brands.push(newBrand);
+  async create(payload: CreateBrandDTO): Promise<void> {
+    const newBrand = this.brandsRepository.create(payload);
+    await this.brandsRepository.save(newBrand);
   }
 
-  update(id: number, body: UpdateBrandDTO): void {
-    const brand = this.findOne(id);
+  async update(id: number, body: UpdateBrandDTO): Promise<void> {
+    const brand = await this.findOne(id);
 
     if (brand) {
-      const brandIndex = this.brands.findIndex((item) => item.id === id);
-      this.brands[brandIndex] = {
-        id,
-        ...brand,
-        ...body,
-      };
+      this.brandsRepository.merge(brand, body);
+      await this.brandsRepository.save(brand);
     }
   }
 
-  delete(id: number): void {
+  async remove(id: number): Promise<void> {
     const brand = this.findOne(id);
 
     if (brand) {
-      const brandIndex = this.brands.findIndex((item) => item.id === id);
-      this.brands.splice(brandIndex, 1);
+      await this.brandsRepository.delete(id);
     }
   }
 }

@@ -1,18 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { Category } from '../entities/category.entity';
 import { CreateCategoryDTO, UpdateCategoryDTO } from '../dtos/categories.dto';
 
 @Injectable()
 export class CategoriesService {
-  private counterId = 1;
-  private categories: Category[] = [];
+  constructor(
+    @InjectRepository(Category)
+    private categoriesRepository: Repository<Category>,
+  ) {}
 
-  findAll(): Category[] {
-    return this.categories;
+  findAll(): Promise<Category[]> {
+    return this.categoriesRepository.find();
   }
 
-  findOne(id: number): Category {
-    const category = this.categories.find((item) => item.id === id);
+  async findOne(id: number): Promise<Category | null> {
+    const category = await this.categoriesRepository.findOneBy({ id });
 
     if (!category)
       throw new NotFoundException(`category ${id} no fue encontrado`);
@@ -20,36 +25,26 @@ export class CategoriesService {
     return category;
   }
 
-  create(payload: CreateCategoryDTO): void {
-    this.counterId++;
+  async create(payload: CreateCategoryDTO): Promise<void> {
+    const newCategory = this.categoriesRepository.create(payload);
 
-    const newCategory = {
-      id: this.counterId,
-      ...payload,
-    };
-
-    this.categories.push(newCategory);
+    await this.categoriesRepository.save(newCategory);
   }
 
-  update(id: number, body: UpdateCategoryDTO): void {
-    const category = this.findOne(id);
+  async update(id: number, body: UpdateCategoryDTO): Promise<void> {
+    const category = await this.findOne(id);
 
     if (category) {
-      const categoryIndex = this.categories.findIndex((item) => item.id === id);
-      this.categories[categoryIndex] = {
-        id,
-        ...category,
-        ...body,
-      };
+      this.categoriesRepository.merge(category, body);
+      await this.categoriesRepository.save(category);
     }
   }
 
-  delete(id: number): void {
+  async remove(id: number): Promise<void> {
     const category = this.findOne(id);
 
     if (category) {
-      const categoryIndex = this.categories.findIndex((item) => item.id === id);
-      this.categories.splice(categoryIndex, 1);
+      await this.categoriesRepository.delete(id);
     }
   }
 }

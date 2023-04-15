@@ -25,11 +25,6 @@ export class CustomersController {
     return this.customersService.findOne(id);
   }
 
-  @Get(':id/orders')
-  getOrdersByUser(@Param('id', ParseIntPipe) id: number) {
-    return this.customersService.findOrderByCustomer(id);
-  }
-
   @Post()
   create(@Body() payload: CreateCustomerDTO) {
     return this.customersService.create(payload);

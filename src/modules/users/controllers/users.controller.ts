@@ -20,11 +20,6 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('db')
-  findUsersdb() {
-    return this.usersService.findUsersDB();
-  }
-
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
@@ -45,6 +40,6 @@ export class UsersController {
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.delete(id);
+    return this.usersService.remove(id);
   }
 }

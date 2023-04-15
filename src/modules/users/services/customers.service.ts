@@ -1,29 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { CreateCustomerDTO, UpdateCustomerDTO } from '../dtos/customers.dto';
 import { Customer } from '../entities/customer.entity';
 import { Order } from 'src/modules/orders/entities/order.entity';
 import { ProductsService } from 'src/modules/products/services/products.service';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CustomersService {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    @InjectRepository(Customer)
+    private customersRepository: Repository<Customer>,
+    private readonly productsService: ProductsService,
+  ) {}
 
-  private counterId = 1;
-  private customers: Customer[] = [
-    {
-      id: 1,
-      address: 'cra 9',
-      name: 'jhon',
-      phone: '22222',
-    },
-  ];
-
-  findAll(): Customer[] {
-    return this.customers;
+  findAll(): Promise<Customer[]> {
+    return this.customersRepository.find();
   }
 
-  findOne(id: number): Customer {
-    const customer = this.customers.find((item) => item.id === id);
+  async findOne(id: number): Promise<Customer | null> {
+    const customer = await this.customersRepository.findOneBy({ id });
 
     if (!customer)
       throw new NotFoundException(`Cliente ${id} no fue encontrada`);
@@ -31,47 +28,25 @@ export class CustomersService {
     return customer;
   }
 
-  create(payload: CreateCustomerDTO): void {
-    this.counterId++;
-
-    const newCustomer = {
-      id: this.counterId,
-      ...payload,
-    };
-
-    this.customers.push(newCustomer);
+  async create(payload: CreateCustomerDTO): Promise<void> {
+    const newUser = this.customersRepository.create(payload);
+    await this.customersRepository.save(newUser);
   }
 
-  update(id: number, body: UpdateCustomerDTO): void {
-    const customer = this.findOne(id);
+  async update(id: number, body: UpdateCustomerDTO): Promise<void> {
+    const customer = await this.findOne(id);
 
     if (customer) {
-      const customerIndex = this.customers.findIndex((item) => item.id === id);
-      this.customers[customerIndex] = {
-        id,
-        ...customer,
-        ...body,
-      };
+      this.customersRepository.merge(customer, body);
+      await this.customersRepository.save(customer);
     }
   }
 
-  delete(id: number): void {
-    const customer = this.findOne(id);
+  async delete(id: number): Promise<void> {
+    const customer = await this.findOne(id);
 
     if (customer) {
-      const customerIndex = this.customers.findIndex((item) => item.id === id);
-      this.customers.splice(customerIndex, 1);
+      await this.customersRepository.delete(id);
     }
-  }
-
-  findOrderByCustomer(id: number): Order {
-    const customer = this.findOne(id);
-    return {
-      id: 1,
-      total: 0,
-      date: new Date(),
-      customer,
-      products: this.productsService.findAll(),
-    };
   }
 }

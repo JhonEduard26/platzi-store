@@ -43,6 +43,6 @@ export class OrdersController {
 
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.ordersService.delete(id);
+    return this.ordersService.remove(id);
   }
 }

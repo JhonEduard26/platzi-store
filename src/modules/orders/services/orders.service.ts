@@ -4,54 +4,48 @@ import {
   CreateOrderDTO,
   UpdateOrderDTO,
 } from 'src/modules/orders/dtos/orders.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
-  private counterId = 1;
-  private orders: Order[] = [];
+  constructor(
+    @InjectRepository(Order) private OrdersRepository: Repository<Order>,
+  ) {}
 
-  findAll(): Order[] {
-    return this.orders;
+  findAll(): Promise<Order[]> {
+    return this.OrdersRepository.find();
   }
 
-  findOne(id: number): Order {
-    const order = this.orders.find((item) => item.id === id);
+  async findOne(id: number): Promise<Order> {
+    const order = await this.OrdersRepository.findOneBy({ id });
 
     if (!order) throw new NotFoundException(`Venta ${id} no fue encontrada`);
 
     return order;
   }
 
-  create(payload: CreateOrderDTO): void {
-    this.counterId++;
+  async create(payload: CreateOrderDTO): Promise<void> {
+    const newOrder = this.OrdersRepository.create(payload);
 
-    const newOrder = {
-      id: this.counterId,
-      ...payload,
-    };
-
-    this.orders.push(newOrder);
+    await this.OrdersRepository.save(newOrder);
   }
 
-  update(id: number, body: UpdateOrderDTO): void {
-    const order = this.findOne(id);
+  async update(id: number, body: UpdateOrderDTO): Promise<void> {
+    const order = await this.findOne(id);
 
     if (order) {
-      const orderIndex = this.orders.findIndex((item) => item.id === id);
-      this.orders[orderIndex] = {
-        id,
-        ...order,
-        ...body,
-      };
+      this.OrdersRepository.merge(order, body);
+
+      await this.OrdersRepository.save(order);
     }
   }
 
-  delete(id: number): void {
-    const order = this.findOne(id);
+  async remove(id: number): Promise<void> {
+    const order = await this.findOne(id);
 
     if (order) {
-      const orderIndex = this.orders.findIndex((item) => item.id === id);
-      this.orders.splice(orderIndex, 1);
+      await this.OrdersRepository.delete(id);
     }
   }
 }

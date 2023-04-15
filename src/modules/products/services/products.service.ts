@@ -1,27 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { Product } from '../entities/product.entity';
 import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dto';
 
 @Injectable()
 export class ProductsService {
-  private counterId = 1;
-  private products: Product[] = [
-    {
-      id: 1,
-      name: 'Mouse',
-      description: 'lorem ipsum dolor',
-      image: '',
-      price: 50_000,
-      stock: 50,
-    },
-  ];
+  constructor(
+    @InjectRepository(Product) private productsRepository: Repository<Product>,
+  ) {}
 
-  findAll(): Product[] {
-    return this.products;
+  findAll(): Promise<Product[]> {
+    return this.productsRepository.find();
   }
 
-  findOne(id: number): Product {
-    const product = this.products.find((item) => item.id === id);
+  async findOne(id: number): Promise<Product | null> {
+    const product = await this.productsRepository.findOneBy({ id });
 
     if (!product)
       throw new NotFoundException(`Producto ${id} no fue encontrado`);
@@ -29,36 +24,25 @@ export class ProductsService {
     return product;
   }
 
-  create(payload: CreateProductDTO): void {
-    this.counterId++;
-
-    const newProduct = {
-      id: this.counterId,
-      ...payload,
-    };
-
-    this.products.push(newProduct);
+  async create(payload: CreateProductDTO): Promise<void> {
+    const newUser = this.productsRepository.create(payload);
+    await this.productsRepository.save(newUser);
   }
 
-  update(id: number, body: UpdateProductDTO): void {
-    const product = this.findOne(id);
+  async update(id: number, body: UpdateProductDTO): Promise<void> {
+    const product = await this.findOne(id);
 
     if (product) {
-      const productIndex = this.products.findIndex((item) => item.id === id);
-      this.products[productIndex] = {
-        id,
-        ...product,
-        ...body,
-      };
+      this.productsRepository.merge(product, body);
+      await this.productsRepository.save(product);
     }
   }
 
-  delete(id: number): void {
-    const product = this.findOne(id);
+  async remove(id: number): Promise<void> {
+    const product = await this.findOne(id);
 
     if (product) {
-      const productIndex = this.products.findIndex((item) => item.id === id);
-      this.products.splice(productIndex, 1);
+      await this.productsRepository.delete(id);
     }
   }
 }
