@@ -1,7 +1,7 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
   Length,
 } from 'class-validator';
@@ -11,12 +11,12 @@ export class CreateUserDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly name: string;
+  readonly username: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly username: string;
+  readonly email: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -27,12 +27,12 @@ export class CreateUserDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  readonly email: string;
+  readonly role: string;
 
   @ApiProperty()
+  @IsPositive()
   @IsOptional()
-  @IsBoolean()
-  readonly isActive: boolean;
+  readonly customerId: number;
 }
 
 export class UpdateUserDTO extends PartialType(CreateUserDTO) {}
