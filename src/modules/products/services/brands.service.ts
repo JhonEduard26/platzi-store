@@ -16,7 +16,12 @@ export class BrandsService {
   }
 
   async findOne(id: number): Promise<Brand | null> {
-    const brand = this.brandsRepository.findOneBy({ id });
+    const brand = await this.brandsRepository.findOne({
+      where: { id },
+      relations: {
+        products: true,
+      },
+    });
 
     if (!brand) throw new NotFoundException(`Marca ${id} no fue encontrado`);
 
@@ -38,7 +43,7 @@ export class BrandsService {
   }
 
   async remove(id: number): Promise<void> {
-    const brand = this.findOne(id);
+    const brand = await this.findOne(id);
 
     if (brand) {
       await this.brandsRepository.delete(id);

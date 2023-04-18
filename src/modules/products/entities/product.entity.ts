@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Brand } from './brand.entity';
 
 @Entity()
 export class Product {
@@ -12,10 +15,13 @@ export class Product {
   id: number;
 
   @Column()
-  name: string;
+  description: string;
+
+  @Column({ unique: true })
+  image: string;
 
   @Column()
-  description: string;
+  name: string;
 
   @Column()
   price: number;
@@ -23,12 +29,12 @@ export class Product {
   @Column()
   stock: number;
 
-  @Column({ unique: true })
-  image: string;
-
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  brand: Brand;
 }

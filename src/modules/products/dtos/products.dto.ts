@@ -1,7 +1,6 @@
 import {
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsPositive,
   IsString,
   IsUrl,
@@ -26,7 +25,6 @@ export class CreateProductDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
   @IsPositive()
   readonly price: number;
 
@@ -35,6 +33,12 @@ export class CreateProductDTO {
   @IsInt()
   @IsPositive()
   readonly stock: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsPositive()
+  @IsInt()
+  readonly brandId: number;
 }
 
 export class UpdateProductDTO extends PartialType(CreateProductDTO) {}
