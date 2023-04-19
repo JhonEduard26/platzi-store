@@ -4,29 +4,34 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Product } from '../entities/product.entity';
 import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dto';
 import { BrandsService } from './brands.service';
+import { Category } from '../entities/category.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     private readonly brandsService: BrandsService,
+    @InjectRepository(Category)
+    private categoriesRepository: Repository<Category>,
   ) {}
 
   findAll(): Promise<Product[]> {
-    return this.productsRepository.find({
-      relations: {
-        brand: true,
-      },
-    });
+    return this.productsRepository.find();
   }
 
   async findOne(id: number): Promise<Product | null> {
-    const product = await this.productsRepository.findOneBy({ id });
+    const product = await this.productsRepository.findOne({
+      where: { id },
+      relations: {
+        brand: true,
+        categories: true,
+      },
+    });
 
     if (!product)
       throw new NotFoundException(`Producto ${id} no fue encontrado`);
@@ -40,6 +45,14 @@ export class ProductsService {
       if (payload.brandId) {
         const brand = await this.brandsService.findOne(payload.brandId);
         newProduct.brand = brand;
+      }
+      if (payload.categoriesIds) {
+        const categories = await this.categoriesRepository.find({
+          where: {
+            id: In(payload.categoriesIds),
+          },
+        });
+        newProduct.categories = categories;
       }
       await this.productsRepository.save(newProduct);
     } catch (error) {
@@ -55,6 +68,14 @@ export class ProductsService {
       if (body.brandId) {
         const brand = await this.brandsService.findOne(body.brandId);
         product.brand = brand;
+      }
+      if (body.categoriesIds) {
+        const categories = await this.categoriesRepository.find({
+          where: {
+            id: In(body.categoriesIds),
+          },
+        });
+        product.categories = categories;
       }
       this.productsRepository.merge(product, body);
       await this.productsRepository.save(product);

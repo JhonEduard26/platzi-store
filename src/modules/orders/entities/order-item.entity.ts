@@ -2,19 +2,26 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
+import { Order } from './order.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity()
-export class Category {
+export class OrderItem {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  name: string;
+  @Column()
+  orderId: number;
+
+  @Column()
+  productId: number;
+
+  @Column()
+  quantity: number;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -22,6 +29,9 @@ export class Category {
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToMany(() => Product, (product) => product.categories)
-  products: Product[];
+  @ManyToOne(() => Order, (order) => order.items)
+  order: Order;
+
+  @ManyToOne(() => Product)
+  product: Product;
 }

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsInt,
   IsNotEmpty,
   IsPositive,
@@ -39,6 +40,11 @@ export class CreateProductDTO {
   @IsPositive()
   @IsInt()
   readonly brandId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  readonly categoriesIds: number[];
 }
 
 export class UpdateProductDTO extends PartialType(CreateProductDTO) {}

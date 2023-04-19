@@ -3,16 +3,17 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
+import { Brand } from './modules/products/entities/brand.entity';
+import { Category } from './modules/products/entities/category.entity';
+import { Customer } from './modules/users/entities/customer.entity';
+import { Order } from './modules/orders/entities/order.entity';
+import { OrderItem } from './modules/orders/entities/order-item.entity';
 import { OrdersModule } from './modules/orders/orders.module';
+import { Product } from './modules/products/entities/product.entity';
 import { ProductsModule } from './modules/products/products.module';
+import { User } from './modules/users/entities/user.entity';
 import { UsersModule } from './modules/users/users.module';
 import config from './config';
-import { Order } from './modules/orders/entities/order.entity';
-import { Product } from './modules/products/entities/product.entity';
-import { Brand } from './modules/products/entities/brand.entity';
-import { Customer } from './modules/users/entities/customer.entity';
-import { User } from './modules/users/entities/user.entity';
-import { Category } from './modules/products/entities/category.entity';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { Category } from './modules/products/entities/category.entity';
       logging: true,
       migrations: ['dist/database/migrations/*.js'],
       migrationsRun: true,
-      entities: [Order, Product, Brand, Customer, User, Category],
+      entities: [Brand, Category, Customer, Order, OrderItem, Product, User],
     }),
     ProductsModule,
     OrdersModule,
