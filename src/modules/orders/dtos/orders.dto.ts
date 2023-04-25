@@ -1,11 +1,11 @@
-import { IsNumber, IsPositive } from 'class-validator';
+import { IsInt, IsPositive } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateOrderDTO {
   @ApiProperty()
   @IsPositive()
-  @IsNumber()
-  readonly total: number;
+  @IsInt()
+  readonly customerId: number;
 }
 
 export class UpdateOrderDTO extends PartialType(CreateOrderDTO) {}

@@ -10,19 +10,19 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dto';
+import {
+  CreateProductDTO,
+  FilterProductsDTO,
+  UpdateProductDTO,
+} from '../dtos/products.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  getAll(
-    @Query('limit') limit = 100,
-    @Query('offset') offset = 0,
-    @Query('brand') brand: string,
-  ) {
-    return this.productsService.findAll();
+  getAll(@Query() params: FilterProductsDTO) {
+    return this.productsService.findAll(params);
   }
 
   @Get(':id')

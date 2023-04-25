@@ -13,6 +13,6 @@ import { Customer } from './entities/customer.entity';
   imports: [TypeOrmModule.forFeature([User, Customer]), ProductsModule],
   controllers: [CustomersController, UsersController],
   providers: [CustomersService, UsersService],
-  exports: [],
+  exports: [CustomersService],
 })
 export class UsersModule {}

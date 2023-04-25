@@ -4,10 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, In, Repository } from 'typeorm';
 
 import { Product } from '../entities/product.entity';
-import { CreateProductDTO, UpdateProductDTO } from '../dtos/products.dto';
+import {
+  CreateProductDTO,
+  FilterProductsDTO,
+  UpdateProductDTO,
+} from '../dtos/products.dto';
 import { BrandsService } from './brands.service';
 import { Category } from '../entities/category.entity';
 
@@ -20,7 +24,22 @@ export class ProductsService {
     private categoriesRepository: Repository<Category>,
   ) {}
 
-  findAll(): Promise<Product[]> {
+  findAll(queryParams?: FilterProductsDTO): Promise<Product[]> {
+    if (queryParams) {
+      const where: FindOptionsWhere<Product> = {};
+
+      const { limit, offset } = queryParams;
+      const { minPrice, maxPrice } = queryParams;
+
+      if (minPrice && maxPrice) {
+        where.price = Between(minPrice, maxPrice);
+      }
+      return this.productsRepository.find({
+        where,
+        take: limit,
+        skip: offset,
+      });
+    }
     return this.productsRepository.find();
   }
 
