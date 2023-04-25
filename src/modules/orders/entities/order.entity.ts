@@ -45,6 +45,7 @@ export class Order {
   @Expose()
   get total() {
     if (this.items) {
+      console.log(this.items);
       return this.items
         .filter((item) => !!item)
         .reduce((total, item) => {
