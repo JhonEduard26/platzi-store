@@ -11,6 +11,7 @@ import {
 
 import { Customer } from '../../users/entities/customer.entity';
 import { OrderItem } from './order-item.entity';
+import { Expose } from 'class-transformer';
 
 @Entity({ name: 'orders' })
 export class Order {
@@ -40,4 +41,17 @@ export class Order {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   items: OrderItem[];
+
+  @Expose()
+  get total() {
+    if (this.items) {
+      return this.items
+        .filter((item) => !!item)
+        .reduce((total, item) => {
+          const totalItem = item.product.price * item.quantity;
+          return total + totalItem;
+        }, 0);
+    }
+    return 0;
+  }
 }
