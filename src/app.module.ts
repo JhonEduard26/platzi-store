@@ -24,11 +24,7 @@ import config from './config';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1234',
-      database: 'platzi-store',
+      url: process.env.DATABASE_URL,
       synchronize: false,
       logging: true,
       migrations: ['dist/database/migrations/*.js'],
