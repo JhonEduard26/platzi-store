@@ -29,9 +29,6 @@ import config from './config';
       logging: true,
       migrations: ['dist/database/migrations/*.js'],
       migrationsRun: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
       entities: [Brand, Category, Customer, Order, OrderItem, Product, User],
     }),
     ProductsModule,
